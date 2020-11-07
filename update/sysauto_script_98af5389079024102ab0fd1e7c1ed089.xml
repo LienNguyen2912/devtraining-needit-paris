@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysauto_script">
+    <sysauto_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <business_calendar/>
+        <condition/>
+        <conditional>false</conditional>
+        <entered_time>1970-01-01 00:00:00</entered_time>
+        <name>Find NeedIt Tasks Due Soon</name>
+        <offset/>
+        <offset_type/>
+        <run_as display_value="System Administrator">6816f79cc0a8016401c5a33be04be441</run_as>
+        <run_as_tz/>
+        <run_dayofmonth>1</run_dayofmonth>
+        <run_dayofweek>1</run_dayofweek>
+        <run_period/>
+        <run_start>2020-11-04 08:27:26</run_start>
+        <run_time>1970-01-01 00:00:00</run_time>
+        <run_type>daily</run_type>
+        <script><![CDATA[// Get today's time and date
+var rightNow = new GlideDateTime();
+
+var user = {
+  name: "John",
+  age: 30,
+  isAdmin: true
+};
+for (var key in user) {
+  // keys and values for the keys
+  gs.info("#ME : key= " + key + "user[key] = " + user[key] ); 
+}
+
+gs.info("Test1 " + (new GlideDateTime()).getLocalTime().getByFormat('hh:mm:ss a'));
+gs.info("Test1.2 " + (new GlideDateTime()).getLocalDate().getByFormat('yyyy:MM:dd'));
+
+// Query the database for NeedIt Task records with Due date field values within
+// 24 hours from now.  Only return NeedIt Task records that do not have
+// a State field value of Closed Complete.
+var dueSoon = new GlideRecord('x_58872_needit_needit_task');
+dueSoon.addQuery('due_date','>=',rightNow);
+dueSoon.addQuery('due_date','<',gs.hoursAgo(-24));
+dueSoon.addQuery('state','!=',3);
+
+dueSoon.query();
+
+
+
+gs.info("Test2 gs.hoursAgo(-24) = " + gs.hoursAgo(-24));
+
+if (dueSoon.getRowCount() == 0) {
+	gs.info("#ME :   no record found!");
+}
+// Write a log message for each NeedIt Task Record due within 24 hours from now
+while(dueSoon.next()){
+	gs.info("#ME :   NeedIt Task due SOON  = " + dueSoon.number + "; short description = " + dueSoon.short_description);
+	gs.eventQueue('x_58872_needit.dueSoonNeedItTasks', dueSoon, dueSoon.number, gs.getUserName());
+}]]></script>
+        <sys_class_name>sysauto_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-11-04 08:32:39</sys_created_on>
+        <sys_id>98af5389079024102ab0fd1e7c1ed089</sys_id>
+        <sys_mod_count>28</sys_mod_count>
+        <sys_name>Find NeedIt Tasks Due Soon</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sysauto_script_98af5389079024102ab0fd1e7c1ed089</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-11-06 04:23:22</sys_updated_on>
+        <time_zone>floating</time_zone>
+        <upgrade_safe>false</upgrade_safe>
+    </sysauto_script>
+</record_update>
